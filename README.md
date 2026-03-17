@@ -16,7 +16,7 @@ __This brings me to the question: Are lower-calorie recipes simpler to prepare t
 The first dataset, `recipe`, contains 83,782 rows and 12 columns, with each row being a unique recipe.
 
 | __Column__ | __Description__ | 
-| — | — |
+| :—-- | :—-- |
 | `name` | Recipe name | 
 | `id` | Recipe ID | 
 | `minutes` | Minutes to prepare recipe | 
@@ -33,7 +33,7 @@ The first dataset, `recipe`, contains 83,782 rows and 12 columns, with each row 
 The second dataset, `interactions`, contains 731,927 rows and 5 columns. The columns contain reviews about specific recipes in the `recipe` dataset. 
 
 | __Column__ | __Description__ | 
-| — | — | 
+| :—-- | :—-- | 
 | `user_id` | User ID | 
 | `recipe_id` | Recipe ID |
 | `date` | Date of interaction | 
