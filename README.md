@@ -139,7 +139,7 @@ Our cleaned dataframe ended up with 83,781 rows, and 24 columns. For our explora
 For this univariate analysis, I examined the distribution of calories amongst all the recipes in the dataset. The distribution of calories is highly right-skewed, most recipes are concentrated in the lower to moderate calorie range (100-299.9) and a long tail extending towards high-calorie dishes. While a majority of recipes are relatively lower in calories, there are a small number of extreme outliers. Those outliers are important to be accounted for when evaluating for the ‘low-calorie’ classification. 
 
 <iframe
-src="proj04/distr_cal.html"
+src="distr_cal.html"
 width="800"
 height="600"
 frameborder="0"
@@ -148,7 +148,7 @@ frameborder="0"
 I also examined the distribution of low-calorie tags in my dataset: 
 
 <iframe
-src="proj04/distr_cal.html"
+src="distr_cal.html"
 width="800"
 height="600"
 frameborder="0"
@@ -163,7 +163,7 @@ For a bivariate analysis, I examined 2 different relationships, the first one be
 The first graph’s distribution shows that low-calorie recipes consistently make up a smaller proportion of recipes across all preparation time categories. However, there is a slight trend where low-calorie recipes are more prevalent among shorter preparation times and become less common as preparation time increases, suggesting that lower-calorie recipes may be somewhat quicker to prepare on average.
 
 <iframe 
-src="proj04/fig2.html"
+src="fig2.html"
 width="800"
 height="600"
 frameborder="0"
@@ -172,7 +172,7 @@ frameborder="0"
 The second graph looks at the mean number of ingredients per recipe type. There is a mean difference of 1 ingredient across the two groups: 8.43 ingredients for low-calorie recipes, and 9.36 ingredients for not-low-calorie recipes. This shows that there is a slight difference with the amount of ingredients needed to prepare a lower-calorie recipe, when compared to a non-low calorie recipe. 
 
 <iframe
-src="proj04/fig3.html"
+src="fig3.html"
 width="800"
 height="600"
 frameborder="0"
@@ -189,5 +189,73 @@ With the addition of the `low_calorie` column in the dataset, I was able to inve
 
 There is a clear difference of the 3 features amongst the two groups. Lower calorie recipes had, on average, a shorter execution time to complete their recipe (~101 vs ~118 minutes), as well as having less steps and ingredients to prepare the recipe. The consistent shift in central tendencies across these three features suggests that lower calorie recipes are simpler to prepare than non-low-calorie recipes. 
 
+## Assessment of Missingness 
 
+In the original merged dataset that came from `recipes` and `interactions` dataset, there are 3 columns that contain missing values. This section will look into the missing values of the dataframe. 
+
+##MNAR Analysis 
+
+Amongst the missing columns in the original merged dataset, I believe that the `description` column is likely MNAR. For example, the users of recipes that take many ingredients, steps and preparation to make, would feel obligated to provide a lengthier and detailed description of their recipe outside of their provided steps. Meanwhile, recipes that take only a few ingredients or steps to make, would feel less obligated to write an additional description. Meaning, “lower effort” recipes would likely have missing descriptions, making the `description` column MNAR. 
+
+### Missingness Dependency
+
+However, there may also be the chance that the missingness of the `description` column is dependent on other columns in the dataset.
+
+The first dependency to investigate would be if the missingness of the `description` column is dependent on the `rating` column. Although the `rating` column does have missing values, this permutation test conducted will be on recipes with _observed_ ratings, and since missing values (np.nan) will be consistently ignored, this test is not invalidated. 
+
+__Null Hypothesis:__ Missingness of `description` is independent of rating 
+
+__Alternative Hypothesis:__ Missingness of `description` depends on rating 
+
+__Test Statistic:__ The absolute difference of mean ratings in recipes with a missing description and recipes without a missing description 
+
+__Significance Level:__ 0.05 
+
+<iframe
+src="missing_desc_bar.html"
+width="800"
+height="600"
+frameborder="0"
+></iframe>
+
+A permutation test was run by randomly shuffling the missingness indicator for the `description` column 1000 times in order to compute the absolute difference in mean ratings with a missing description and without a missing description. 
+
+<iframe
+src="missing_desc_hist.html"
+width="800"
+height="600"
+frameborder="0"
+></iframe>
+
+The __observed statististic__, a value of __0.175__, is represented by the red dashed line on the graph above. Since the __p_value__ of__(0.017)__ is less than 0.05, the significance level I set, I __reject__ the null hypothesis. The missingness of `description` does depend on the `rating` column.
+
+Another missingness dependency to investigate is if the missingness of the `description` column is dependent on the `n_steps` column. 
+
+__Null hypothesis:__ Missingness of `description` is independent of the number of steps in a recipe 
+
+__Alternative hypothesis:__ Missingness of `description` depends on the number of steps in a recipe 
+
+__Test Statistic:__ The absolute difference of the mean number of steps in a recipe with a missing description and recipes without a missing description
+
+__Significance Level:__ 0.05
+
+<iframe
+src="missing_desc_steps.html"
+width="800"
+height="600"
+frameborder="0"
+></iframe>
+
+There is less than a 1 step difference on average for recipes with description and without. The missingness indicator of the `description` column was run 1000 times again, to simulate 1000 absolute differences in mean number of recipe steps where a description was missing and ones where it was not. 
+
+<iframe
+src="missing_desc_steps_p.html"
+width="800"
+height="600"
+frameborder="0"
+></iframe>
+
+With a p value of __0.223__, which is greater than the significance level of 0.05, we _fail to reject__ the null hypothesis. The missingness of the description column does NOT appear to depend on the number of steps that a recipe has.
+
+## Hypothesis Testing
 
