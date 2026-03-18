@@ -1,6 +1,3 @@
-# predictive-performance-of-recipes-calories
-This repository is for storing my final project for the dsc 80 class: Practice and Application of Data Science 
-
 # Exploring the Relationship between Low-calorie Recipes and their Preparation Complexity 
 
 By: Prisca He 
@@ -136,20 +133,15 @@ Our cleaned dataframe ended up with 83,781 rows, and 24 columns. For our explora
 
 For this univariate analysis, I examined the distribution of calories amongst all the recipes in the dataset. The distribution of calories is highly right-skewed, most recipes are concentrated in the lower to moderate calorie range (100-299.9) and a long tail extending towards high-calorie dishes. While a majority of recipes are relatively lower in calories, there are a small number of extreme outliers. Those outliers are important to be accounted for when evaluating for the ‘low-calorie’ classification. 
 
-<iframe
-src="distr_cal.html"
-width="800"
-height="600"
-frameborder="0"
-></iframe>
+<iframe src="distr_cal.html" width="800" height="600" frameborder="0"></iframe>
 
 I also examined the distribution of low-calorie tags in my dataset: 
 
 <iframe
-src="distr_cal.html"
-width="800"
-height="600"
-frameborder="0"
+  src="distr_cal.html"
+  width="800"
+  height="600"
+  frameborder="0"
 ></iframe>
 
 The distribution shows that the dataset is highly imbalanced, with a large majority of recipes classified as not low-calorie and only a small proportion labeled as low-calorie. This imbalance is important to consider in subsequent analyses, as comparisons between the two groups may be influenced by the disproportionate representation of non-low-calorie recipes.
