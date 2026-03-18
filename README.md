@@ -1,4 +1,4 @@
-# Exploring the Relationship between Low-calorie Recipes and their Preparation Complexity 
+# Exploring the Relationship between Low-Calorie Recipes and their Preparation Complexity 
 
 By: Prisca He 
 
@@ -47,7 +47,7 @@ Exploring whether or not lower-calorie recipes are simpler to prepare helps dete
 
 Before exploring the two datasets, prior data cleaning steps were done to make the data exploration efficient. 
 
-1. Left merge the recipes dataset and interactions dataset on the recipe column ‘id’ and interactions column ‘recipe_id’.  
+- Left merge the recipes dataset and interactions dataset on the recipe column ‘id’ and interactions column ‘recipe_id’.  
 
   This creates a combined dataset where each row contains its recipe information as well as its rating and reviews it received from users on Food.com. 
 
@@ -71,23 +71,23 @@ Before exploring the two datasets, prior data cleaning steps were done to make t
 - `rating`
 - `review`
 
-2. Replace ratings of 0 with np.nan in the `ratings` column
+- Replace ratings of 0 with np.nan in the `ratings` column
 
   A rating of 0 means the user forgot or intentionally did not rate the recipe, as ratings are typically on a scale of 1 to 5. Looking into the number of values in the rating column, ratings of 0 have the third highest amount of entries in the dataset. If we decided to keep ratings of 0 in the ratings column, this would potentially artificially lower any statistical measures computed using the ratings column. So, replacing ratings of 0 with np.nan would allow us to avoid any underestimates or bias in our ratings column. 
 
-3. Add a column `avg_rating` that contains the average rating per recipe 
+- Add a column `avg_rating` that contains the average rating per recipe 
 
   The dataset currently contains one row per recipe review, which means there can be more than one row corresponding to a unique recipe if it contains more than one review. So, adding a column to the dataset that finds the average rating per recipe allows for a more accurate representation of each recipe. 
 
-4. Drop the `rating` column from the dataframe 
+- Drop the `rating` column from the dataframe 
 
   Since each recipe contains an average rating per recipe review, there is no need for the recipe’s individual ratings anymore. We can drop the `ratings` column and collapse the recipe that contains multiple with multiple reviews and ratings into one row. 
 
-5. Split the values in the nutrition column into individual columns
+- Split the values in the nutrition column into individual columns
 
   The values of the `nutrition` column are initially stored as a string of a list containing six different nutrition values: calories, total fat, sugar, sodium, protein, saturated fat and carbohydrates. A lambda function was applied to the `nutrition` column to convert the string into a list, and convert all the values within the list into floats. Then, the six values were turned to six different columns, each column containing their respective nutritional value. This step of expanding the nutrition column will help with utilizing any nutritional information in our analysis later down the line. 
 
-6. Add a column `low_calorie` that indicates if the recipe contains a low-calorie tag
+- Add a column `low_calorie` that indicates if the recipe contains a low-calorie tag
 
   The tags column of the dataframe is initially stored as a string of a list of tags (i.e labels) that Food.com has encoded for each recipe. A lambda function was applied to the column to convert the string into a list, and then checked if the ‘low-calorie’ tag was included in the list. If the tag was in the list, the recipe would have a value of 1 under the new `low_calorie` column, and 0, if not. This column would allow us to compare preparation complexities amongst low-calorie tagged recipes and non-low-calorie recipes. 
 
@@ -138,7 +138,7 @@ For this univariate analysis, I examined the distribution of calories amongst al
 I also examined the distribution of low-calorie tags in my dataset: 
 
 <iframe
-  src="distr_cal.html"
+  src="prop_lowcal.html"
   width="800"
   height="600"
   frameborder="0"
