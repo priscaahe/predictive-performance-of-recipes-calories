@@ -259,3 +259,114 @@ With a p value of __0.223__, which is greater than the significance level of 0.0
 
 ## Hypothesis Testing
 
+The main question while exploring this dataset was to see whether or not low-calorie recipes are simpler to prepare than other recipes. In the univariate and bivariate analyses of the previous sections, the respective graphs seem to indicate that low-calorie recipes may be simpler to prepare. To see if the differences were attributed to chance or not, a __permutation test__ was run with the following information: 
+
+A __Permutation Test__ will be conducted to determine whether or not the number of steps is different or the same for lower calorie recipes and non-lower calorie recipes. 
+
+__Null Hypothesis:__ Low-calorie recipes and non-low-calorie recipes take the same number of steps to complete.
+
+__Alternative Hypothesis:__ Low-calorie recipes take fewer steps to complete than non-low-calorie recipes.
+
+__Test Statistic:__ The difference in means between steps taken for low-calorie recipes versus non-lower-calorie recipes.
+
+__Significance Level:__ 0.05 
+
+A permutation test was chosen for testing the relationship between recipe type and the number of steps it takes because it allows for us to test the differences between low-calorie recipes and non-low calorie recipes without making any assumptions of the underlying data. The alternative hypothesis was based on our univariate and bivariate analyses, which suggested that low-calorie recipes tend to have a lower average preparation complexity. To test this observation, we take the difference in mean number of steps between low-calorie and non-low-calorie recipes as our test statistic. Comparing the observed difference of a distribution generated through random reassignment of recipe labels will allow me to assess whether or not the observed difference is due to chance. 
+
+To run the permutation test, we first took the difference in average number of steps between low-calorie and non-low-calorie recipes. The __observed statistic__ is __-1.85.__
+
+Then, we took a copy of the `low-calorie` column and shuffled the column’s values 1000 times to compute for 1000 test statistics as described above. Our __p-value__ for this permutation test turned out to be __-1.85.__
+
+<iframe
+src="hypo-test.html"
+width="800"
+height="600"
+frameborder="0"
+></iframe>
+
+The permutation test produced a p-value of less than __0.001__. This provides _strong evidence_ against the null hypothesis that the two groups have the same distribution of number of steps to create a recipe. This suggests that low-calorie recipes tend to require fewer steps to complete than non-low-calorie recipes, so we __reject the null hypothesis__. One possible explanation is that low-calorie recipes rely on simpler cooking methods and fewer ingredients, such as basic preparation like grilling or baking. On the other hand, higher-calorie recipes may involve more complex processes such as frying, or even incorporating more ‘fats’ into their recipe. 
+
+## Framing a Prediction Problem 
+
+Since the question that prompted the exploration of this dataset was related to low-calorie recipes, we want to __predict if a recipe is labeled as low-calorie or not__. This would be a __binary classification__ problem as there are only two outcomes of the prediction, a low-calorie recipe or non-low-calorie recipe. Our response variable, `low_calorie`, was constructed as a binary indicator based on the tags associated with each recipe from Food.com. Specifically, recipes that were labeled by the author with a “low-calorie” tag were assigned a value of 1, while all other recipes were assigned with a value of 0. This variable will capture whether a recipe is explicitly categorized as low-calorie according to its metadata. 
+
+The metric used to evaluate the prediction model is the F1 score due to there being an imbalance between non-low-calorie recipes and low-calorie recipes: 
+
+|   low_calorie |   count |
+|--------------:|--------:|
+|             0 |   70847 |
+|             1 |   12934 |
+
+Since lower-calorie recipes make up a smaller proportion of the overall data, our prediction model could achieve high accuracy by simply predicting the majority class (non-low-calorie recipe) without identifying any low-calorie recipe. Choosing the F1 score balances precision and recall, which provides a better measure of model performance on the minority class. 
+
+The data prior to making our prediction model is below: 
+
+|   minutes |   n_steps |   n_ingredients |   sugar |   protein |   carbohydrates |   total fat |   low_calorie |
+|----------:|----------:|----------------:|--------:|----------:|----------------:|------------:|--------------:|
+|        50 |        11 |               7 |       7 |        41 |               8 |          34 |             0 |
+|        55 |         6 |               8 |     208 |        13 |              20 |          18 |             0 |
+|        45 |         7 |               9 |      12 |        37 |               5 |          30 |             1 |
+|        45 |        11 |               9 |     149 |        14 |              21 |          53 |             0 |
+|        25 |         8 |               9 |     347 |         1 |              33 |           0 |             0 |
+
+The features `minutes`, `n_steps`, and `n_ingredients` are related to the recipe’s preparation complexity, so they are included in the data. `sugar`, `protein`, `carbohydrates` and `total fat` are also included because they are key nutritional components that directly contribute to a recipe’s total calorie content. Since the response variable `low_calorie` is defined based on whether a recipe is considered low in calories, these nutritional components are highly relevant predictors. 
+
+## Baseline Model 
+
+The baseline model for the prediction task will use a decision tree classifier with the following three features: 
+ 
+* `minutes`: the time it takes to complete the recipe,
+* `n_steps`: the number of steps in the recipe, and
+* `n_ingredients`: the number of ingredients the recipe requires.
+
+All the features are quantitative features, so there will be no encodings performed on the three columns. 
+
+After training the baseline model on these three features, the performance metric for the baseline model, the F1 score, has a value of __0.00432__ for the __training data__ and a F1 score of __0.00489__ on the __test data__. Considering that the F1 score ranges from 0 to 1, where 0 indicates the worst performance of a model, our baseline model’s features are weak indicators of predicting a low-calorie labeled recipe. 
+
+We’ll try improving upon our baseline model in the next step and include the nutritional components into our model.  
+
+## Final Model 
+
+To improve from our baseline model, I created two new features, which will be included in the final model along with 4 features from the original merged dataset, and our baseline model’s 3 features. The target variable will remain `low_calorie`. 
+
+New Features: (2)
+*`minutes_per_step`: How many minutes does each step take
+*`ingredients_per_step`: Number of ingredients each step requires 
+
+Additional features: (4)
+*`sugar`: the percent daily value (PDV) of sugar per serving
+*`protein`: the percent daily value (PDV) of protein per serving
+*`carbohydrates`: the percent daily value (PDV) of carbohydrates per serving
+*`total fat`: the percent daily value (PDV) of total fat per serving
+
+Features from baseline model: (3)
+*`minutes`
+*`n_steps`
+*`n_ingredients`
+
+This makes for a total of 9 features that our dataset will have in order to train the improved, final predictive model. 
+
+`minutes_per_step` & `ingredients_per_step`:
+
+The two new features, `minutes_per_step` and `ingredients_per_step`, were both introduced as new features to better capture the complexity of a recipe in each step. The feature `minutes_per_step` measures how time-consuming each step is on average, while `ingredients_per_step` captures how many ingredients are involved in each step of the recipe. These columns can be helpful, for example, when two recipes have the same number of steps, but one may require more time or ingredients per step. This kind of difference would be more visible for the model in improving its ability to distinguish between simpler and complex recipes. 
+
+Nutritional features: sugar, protein, carbohydrates and total fat
+
+The four nutritional features were also included in the final model as they are primary macronutrients that directly contribute to a recipe’s total calorie content. Since the response variable of the model, `low_calorie`, is based on whether a recipe is low in calories, including these four features will provide meaningful information for the binary classification. 
+
+The other two nutritional features, `sodium` and `saturated fat` were not included because they contribute less directly to calorie content. Saturated fat is a subset of total fat, making it redudant to include the feature in our dataset, and sodium does not contribute calories. Altogether, including the four main macronutrients features provides sufficient information for our predictive model. 
+
+Features from baseline model: minutes, n_steps, and n_ingredients 
+
+The features from our baseline model are also included in our improved, final predictive model as they capture different aspects of a recipe’s preparation complexity. In earlier sections, we explored whether low-calorie recipes were simpler to prepare, so these features provide direct measures of complexity. Keeping these features allows the model to use different dimensions of complexity to distinguish between low-calorie and non-low-calorie recipes. 
+
+The modeling algorithm I chose to train my dataset (of 9 features) is the Logistic Regression model. __Logistic regression__ is a classification model that estimates the probability of a binary outcome (0 / 1) by modeling the relationship between input features and log-odds of the target variable. This model is suited for binary classification in our case as our (9) features are all numerical, quantitative values. 
+
+The nutrition features, `sugar`, `protein`, `carbohydrates`, and `total fat`, were standardized using the StandardScaler to ensure they are on a comparable scale before training the logistic regression model. These four features are all expressed as percent daily values with different ranges and variability, which can disproportionately influence the model’s learned coefficients if not standardized prior to training the model. 
+
+Using logistic regression as our modeling algorithm, we also used GridSearchCV to look for the best hyperparameter C. The hyperparameter C controls the strength of regularization in logistic regression – smaller values of C increase regularization, resulting in a simpler model, while larger values decrease it, resulting in a more flexible model. C  helps balance bias and variance. The best hyperparameter C using GridSearchCV was C = 0.01. 
+
+The F1 score of the final model is __0.348__, which is a significant improvement from our baseline model’s f1 score of 0.0042. The F1 score difference is a __difference of 0.3438__. 
+
+Our baseline model’s F1-score of 0.0042 indicated that the model had no ability at all to identify low-calorie recipes. In contrast, our final model’s F1-score of 0.348 shows a substantial improvement: the model can now meaningfully detect low-calorie recipes. 
+
