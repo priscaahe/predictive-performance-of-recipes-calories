@@ -52,9 +52,9 @@ Before exploring the two datasets, prior data cleaning steps were done to make t
 
 1. Left merge the recipes dataset and interactions dataset on the recipe column ‘id’ and interactions column ‘recipe_id’.  
 
-This creates a combined dataset where each row contains its recipe information as well as its rating and reviews it received from users on Food.com. 
+  This creates a combined dataset where each row contains its recipe information as well as its rating and reviews it received from users on Food.com. 
 
-Now, the merged dataset contains the following columns: 
+  Now, the merged dataset contains the following columns: 
 
 - `name` 
 - `id`
@@ -76,25 +76,25 @@ Now, the merged dataset contains the following columns:
 
 2. Replace ratings of 0 with np.nan in the `ratings` column
 
-A rating of 0 means the user forgot or intentionally did not rate the recipe, as ratings are typically on a scale of 1 to 5. Looking into the number of values in the rating column, ratings of 0 have the third highest amount of entries in the dataset. If we decided to keep ratings of 0 in the ratings column, this would potentially artificially lower any statistical measures computed using the ratings column. So, replacing ratings of 0 with np.nan would allow us to avoid any underestimates or bias in our ratings column. 
+  A rating of 0 means the user forgot or intentionally did not rate the recipe, as ratings are typically on a scale of 1 to 5. Looking into the number of values in the rating column, ratings of 0 have the third highest amount of entries in the dataset. If we decided to keep ratings of 0 in the ratings column, this would potentially artificially lower any statistical measures computed using the ratings column. So, replacing ratings of 0 with np.nan would allow us to avoid any underestimates or bias in our ratings column. 
 
 3. Add a column `avg_rating` that contains the average rating per recipe 
 
-The dataset currently contains one row per recipe review, which means there can be more than one row corresponding to a unique recipe if it contains more than one review. So, adding a column to the dataset that finds the average rating per recipe allows for a more accurate representation of each recipe. 
+  The dataset currently contains one row per recipe review, which means there can be more than one row corresponding to a unique recipe if it contains more than one review. So, adding a column to the dataset that finds the average rating per recipe allows for a more accurate representation of each recipe. 
 
 4. Drop the `rating` column from the dataframe 
 
-Since each recipe contains an average rating per recipe review, there is no need for the recipe’s individual ratings anymore. We can drop the `ratings` column and collapse the recipe that contains multiple with multiple reviews and ratings into one row. 
+  Since each recipe contains an average rating per recipe review, there is no need for the recipe’s individual ratings anymore. We can drop the `ratings` column and collapse the recipe that contains multiple with multiple reviews and ratings into one row. 
 
 5. Split the values in the nutrition column into individual columns
 
-The values of the `nutrition` column are initially stored as a string of a list containing six different nutrition values: calories, total fat, sugar, sodium, protein, saturated fat and carbohydrates. A lambda function was applied to the `nutrition` column to convert the string into a list, and convert all the values within the list into floats. Then, the six values were turned to six different columns, each column containing their respective nutritional value. This step of expanding the nutrition column will help with utilizing any nutritional information in our analysis later down the line. 
+  The values of the `nutrition` column are initially stored as a string of a list containing six different nutrition values: calories, total fat, sugar, sodium, protein, saturated fat and carbohydrates. A lambda function was applied to the `nutrition` column to convert the string into a list, and convert all the values within the list into floats. Then, the six values were turned to six different columns, each column containing their respective nutritional value. This step of expanding the nutrition column will help with utilizing any nutritional information in our analysis later down the line. 
 
 6. Add a column `low_calorie` that indicates if the recipe contains a low-calorie tag
 
-The tags column of the dataframe is initially stored as a string of a list of tags (i.e labels) that Food.com has encoded for each recipe. A lambda function was applied to the column to convert the string into a list, and then checked if the ‘low-calorie’ tag was included in the list. If the tag was in the list, the recipe would have a value of 1 under the new `low_calorie` column, and 0, if not. This column would allow us to compare preparation complexities amongst low-calorie tagged recipes and non-low-calorie recipes. 
+  The tags column of the dataframe is initially stored as a string of a list of tags (i.e labels) that Food.com has encoded for each recipe. A lambda function was applied to the column to convert the string into a list, and then checked if the ‘low-calorie’ tag was included in the list. If the tag was in the list, the recipe would have a value of 1 under the new `low_calorie` column, and 0, if not. This column would allow us to compare preparation complexities amongst low-calorie tagged recipes and non-low-calorie recipes. 
 
-Here are all the columns of the cleaned dataframe: 
+ Here are all the columns of the cleaned dataframe: 
 
 - `name` 
 - `id`
@@ -328,35 +328,29 @@ We’ll try improving upon our baseline model in the next step and include the n
 To improve from our baseline model, I created two new features, which will be included in the final model along with 4 features from the original merged dataset, and our baseline model’s 3 features. The target variable will remain `low_calorie`. 
 
 New Features: (2)
-*`minutes_per_step`: How many minutes does each step take
-*`ingredients_per_step`: Number of ingredients each step requires 
-
-Additional features: (4)
-*`sugar`: the percent daily value (PDV) of sugar per serving
-*`protein`: the percent daily value (PDV) of protein per serving
-*`carbohydrates`: the percent daily value (PDV) of carbohydrates per serving
-*`total fat`: the percent daily value (PDV) of total fat per serving
-
-Features from baseline model: (3)
-*`minutes`
-*`n_steps`
-*`n_ingredients`
-
-This makes for a total of 9 features that our dataset will have in order to train the improved, final predictive model. 
-
-`minutes_per_step` & `ingredients_per_step`:
+* `minutes_per_step`: How many minutes does each step take
+* `ingredients_per_step`: Number of ingredients each step requires
 
 The two new features, `minutes_per_step` and `ingredients_per_step`, were both introduced as new features to better capture the complexity of a recipe in each step. The feature `minutes_per_step` measures how time-consuming each step is on average, while `ingredients_per_step` captures how many ingredients are involved in each step of the recipe. These columns can be helpful, for example, when two recipes have the same number of steps, but one may require more time or ingredients per step. This kind of difference would be more visible for the model in improving its ability to distinguish between simpler and complex recipes. 
 
-Nutritional features: sugar, protein, carbohydrates and total fat
+Additional features: (4)
+* `sugar`: the percent daily value (PDV) of sugar per serving
+* `protein`: the percent daily value (PDV) of protein per serving
+* `carbohydrates`: the percent daily value (PDV) of carbohydrates per serving
+* `total fat`: the percent daily value (PDV) of total fat per serving
 
 The four nutritional features were also included in the final model as they are primary macronutrients that directly contribute to a recipe’s total calorie content. Since the response variable of the model, `low_calorie`, is based on whether a recipe is low in calories, including these four features will provide meaningful information for the binary classification. 
 
 The other two nutritional features, `sodium` and `saturated fat` were not included because they contribute less directly to calorie content. Saturated fat is a subset of total fat, making it redudant to include the feature in our dataset, and sodium does not contribute calories. Altogether, including the four main macronutrients features provides sufficient information for our predictive model. 
 
-Features from baseline model: minutes, n_steps, and n_ingredients 
+Features from baseline model: (3)
+* `minutes`
+* `n_steps`
+* `n_ingredients`
 
 The features from our baseline model are also included in our improved, final predictive model as they capture different aspects of a recipe’s preparation complexity. In earlier sections, we explored whether low-calorie recipes were simpler to prepare, so these features provide direct measures of complexity. Keeping these features allows the model to use different dimensions of complexity to distinguish between low-calorie and non-low-calorie recipes. 
+
+This makes for a total of 9 features that our dataset will have in order to train the improved, final predictive model. 
 
 The modeling algorithm I chose to train my dataset (of 9 features) is the Logistic Regression model. __Logistic regression__ is a classification model that estimates the probability of a binary outcome (0 / 1) by modeling the relationship between input features and log-odds of the target variable. This model is suited for binary classification in our case as our (9) features are all numerical, quantitative values. 
 
@@ -376,11 +370,11 @@ Choosing to test our model’s fairness across short and long recipes would show
 
 __Null Hypothesis:__ Our model is fair. It performs equally across shorter and longer recipes.
 
-__Alternative Hypothesis:__ Our model is unfair. It performs worse for shorter recipes (group X).
+__Alternative Hypothesis:__ Our model is unfair. It performs worse for shorter recipes.
 
 __Test Statistic:__ Difference in F1 scores (short recipe F1_score - long recipe F1_score)
 
 __Significance Level:__ 0.05
 
-To run this permutation test, a new column called `group` that contained True and False values, True representing the recipe being a short recipe (less than 60 minutes to complete), and False representing the recipe being a long recipe (greater than or equal to 60 minutes to complete). The observed statistic took the difference in the F1 scores between the short and long recipes, which came out to __0.015__. Then, the `group` column was shuffled 1000 times to collect 1000 test statistics. The resulting p value was __0.924__, which is greater than our significance level of 0.05. This indicates that the observed difference in F1-scores between the two groups (short and long recipes) is likely due to random chance, and thus, we fail to reject our null hypothesis. This suggests that our model achieves similar performance across short recipes and long recipes. 
+To run this permutation test, a new column called `group` was created. The column contained true and false values, true representing the recipe being a short recipe (less than 60 minutes to complete), and false representing the recipe being a long recipe (greater than or equal to 60 minutes to complete). The observed statistic took the difference in the F1 scores between the short and long recipes, which came out to __0.015__. Then, the `group` column was shuffled 1000 times to collect 1000 test statistics. The resulting p value was __0.924__, which is greater than our significance level of 0.05. This indicates that the observed difference in F1-scores between the two groups (short and long recipes) is likely due to random chance, and thus, we fail to reject our null hypothesis. This suggests that our model achieves similar performance across short recipes and long recipes. 
 
