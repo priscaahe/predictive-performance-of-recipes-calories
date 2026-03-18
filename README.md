@@ -16,7 +16,6 @@ __This brings me to the question: Are lower-calorie recipes simpler to prepare t
 The first dataset, `recipe`, contains 83,782 rows and 12 columns, with each row being a unique recipe.
 
 | __Column__ | __Description__ | 
-|:—--|:—--|
 | `name` | Recipe name | 
 | `id` | Recipe ID | 
 | `minutes` | Minutes to prepare recipe | 
@@ -33,7 +32,6 @@ The first dataset, `recipe`, contains 83,782 rows and 12 columns, with each row 
 The second dataset, `interactions`, contains 731,927 rows and 5 columns. The columns contain reviews about specific recipes in the `recipe` dataset. 
 
 | __Column__ | __Description__ | 
-| :—-- | :—-- | 
 | `user_id` | User ID | 
 | `recipe_id` | Recipe ID |
 | `date` | Date of interaction | 
@@ -369,4 +367,20 @@ Using logistic regression as our modeling algorithm, we also used GridSearchCV t
 The F1 score of the final model is __0.348__, which is a significant improvement from our baseline model’s f1 score of 0.0042. The F1 score difference is a __difference of 0.3438__. 
 
 Our baseline model’s F1-score of 0.0042 indicated that the model had no ability at all to identify low-calorie recipes. In contrast, our final model’s F1-score of 0.348 shows a substantial improvement: the model can now meaningfully detect low-calorie recipes. 
+
+## Fairness Analysis 
+
+To determine if our model performs better for certain groups or not, we tested how ‘fair’ our model is across the two different groups: short recipes and long recipes. If a recipe took 60 minutes or longer to complete, it would be categorized as a “long” recipe, and “short” recipe if it took less than 60 minutes to complete. This 60 minute threshold was chosen due to its natural and interpretable nature. Recipes that take under an hour are typically perceived as simple to prepare, while those exceeding one hour would require more effort and planning. 
+
+Choosing to test our model’s fairness across short and long recipes would show if our model achieves a similar performance for both groups. If our model performs better for the shorter recipes than the longer, this would indicate our model is biased towards recipes that are shorter in length, and hence, violates parity. To test our model’s fairness, we’ll be using the difference in the two groups's __F1 score__. While F1 score is not a specific parity measure, it allows us to assess whether overall classification performance is consistent across groups. Using F1 score as our evaluation metric of model parity is also beecause the target variable, `low_calorie`, is imbalanced. Using accuracy parity may be misleading, as our model can achieve high accuracy by favoring the majority class. So, using F1-score balances both precision and recall, making it a more appropriate metric for evaluating model performance across groups. 
+
+__Null Hypothesis:__ Our model is fair. It performs equally across shorter and longer recipes.
+
+__Alternative Hypothesis:__ Our model is unfair. It performs worse for shorter recipes (group X).
+
+__Test Statistic:__ Difference in F1 scores (short recipe F1_score - long recipe F1_score)
+
+__Significance Level:__ 0.05
+
+To run this permutation test, a new column called `group` that contained True and False values, True representing the recipe being a short recipe (less than 60 minutes to complete), and False representing the recipe being a long recipe (greater than or equal to 60 minutes to complete). The observed statistic took the difference in the F1 scores between the short and long recipes, which came out to __0.015__. Then, the `group` column was shuffled 1000 times to collect 1000 test statistics. The resulting p value was __0.924__, which is greater than our significance level of 0.05. This indicates that the observed difference in F1-scores between the two groups (short and long recipes) is likely due to random chance, and thus, we fail to reject our null hypothesis. This suggests that our model achieves similar performance across short recipes and long recipes. 
 
