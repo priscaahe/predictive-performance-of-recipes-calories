@@ -183,9 +183,9 @@ There is a clear difference of the 3 features amongst the two groups. Lower calo
 
 In the original merged dataset that came from `recipes` and `interactions` dataset, there are 3 columns that contain missing values. This section will look into the missing values of the dataframe. 
 
-##MNAR Analysis 
+## MNAR Analysis 
 
-Amongst the missing columns in the original merged dataset, I believe that the `description` column is likely MNAR. For example, the users of recipes that take many ingredients, steps and preparation to make, would feel obligated to provide a lengthier and detailed description of their recipe outside of their provided steps. Meanwhile, recipes that take only a few ingredients or steps to make, would feel less obligated to write an additional description. Meaning, “lower effort” recipes would likely have missing descriptions, making the `description` column MNAR. 
+The `description` column is likely MNAR because whether a description is missing may depend on the content or perceived usefulness of the description itself. For example, users may choose not to write a description if it is meaningless to add anything beyond the steps listed, while more detailed or complex recipes may motivate users to include additional context. Since this decision depends on the unobserved description text, the missingness mechanism may be related to the value that is missing, making it MNAR.
 
 ### Missingness Dependency
 
@@ -245,7 +245,7 @@ height="600"
 frameborder="0"
 ></iframe>
 
-With a p value of __0.223__, which is greater than the significance level of 0.05, we _fail to reject__ the null hypothesis. The missingness of the description column does NOT appear to depend on the number of steps that a recipe has.
+With a p value of __0.223__, which is greater than the significance level of 0.05, we _fail to reject_ the null hypothesis. The missingness of the description column does NOT appear to depend on the number of steps that a recipe has.
 
 ## Hypothesis Testing
 
